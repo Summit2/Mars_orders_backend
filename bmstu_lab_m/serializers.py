@@ -15,4 +15,4 @@ class OrdersSerializer(serializers.ModelSerializer):
         # Модель, которую мы сериализуем
         model = DeliveryOrders
         # Поля, которые мы сериализуем
-        fields = ["pk", "id_order", "id_user", "id_moderator", "order_status", 'date_create','date_accept', 'date_finish']
+        fields = ["pk", "id_order", "id_user", "id_moderator", "order_status", 'date_create','date_accept', 'date_finish', 'is_delivered']

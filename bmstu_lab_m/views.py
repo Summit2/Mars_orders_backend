@@ -599,6 +599,7 @@ def get_orders(request, format=None):
                 "user_email": user_instance.email,
                 "moderator_email": moderator_instance.email if moderator_instance is not None else None,
                 "order_status": order.order_status,
+                "is_delivered" : order.is_delivered,
                 "date_create": order.date_create,
                 "date_accept": order.date_accept,
                 "date_finish": order.date_finish
@@ -631,6 +632,7 @@ def get_orders(request, format=None):
                 "user_email": user_instance.email,
                 "moderator_email": moderator_instance.email if moderator_instance is not None else None,
                 "order_status": order.order_status,
+                 "is_delivered" : order.is_delivered,
                 "date_create": order.date_create,
                 "date_accept": order.date_accept,
                 "date_finish": order.date_finish
@@ -697,17 +699,17 @@ def put_order_detail(request, pk, format=None):
   Обновление информации о конкретном заказе
   """
   user = check_authorize(request)
-  if not user or not user.is_moderator:
+  if not user: 
       return Response(status=status.HTTP_403_FORBIDDEN)
 
   order = get_object_or_404(DeliveryOrders, pk=pk)
 
   # Check if date_finish exists in request.data
-  if 'date_finish' in request.data:
-      # Convert date_finish to datetime object
-      date_finish = dateutil.parser.parse(request.data['date_finish'])
-      # Update date_finish in request.data
-      request.data['date_finish'] = date_finish
+#   if 'date_finish' in request.data:
+#       # Convert date_finish to datetime object
+#       date_finish = dateutil.parser.parse(request.data['date_finish'])
+#       # Update date_finish in request.data
+#       request.data['date_finish'] = date_finish
 
   # Update order attributes directly
   for key, value in request.data.items():
@@ -804,6 +806,19 @@ def set_user_status(request, pk, format=None):
         queryset = DeliveryOrders.objects.filter(id_user=id_user, order_status='введён')
         if queryset.exists():
             queryset.update( order_status=new_status ,date_accept =datetime.now())
+            # Extract session_id from the request headers
+        print(request.COOKIES.get('session_key'))
+        session_id = request.COOKIES.get('session_key') #request.headers.get('Cookie', '').split('=')[2]
+        print(session_id )
+        # print(request.headers.get('Cookie', '').split('session_key=')[0].split(';')[0] )
+        # Make a request to the /async_task endpoint
+        async_task_url = "http://localhost:8000/api/async_task/"
+        async_task_headers = {'Content-Type': 'application/json', 'Cookie': f'session_id={session_id}'}
+        async_task_data = {"id_order": pk, "id_moderator" : user.id_user}
+        async_task_response = requests.put(async_task_url, headers=async_task_headers, json=async_task_data)
+
+        if async_task_response.status_code == 200:
+            print(async_task_response)
             return Response(status=status.HTTP_204_NO_CONTENT)
     elif new_status == 'отменён': 
         queryset = DeliveryOrders.objects.filter(id_user=id_user, order_status='введён')
@@ -838,6 +853,7 @@ def set_user_status(request, pk, format=None):
     operation_description='Обновить статус модератором',
 )
 @api_view(['PUT'])
+
 def update_moderator_status(request, pk, format=None):
     """
     Возможные статусы:
@@ -859,13 +875,18 @@ def update_moderator_status(request, pk, format=None):
     if new_status not in ['завершён', 'отменён']:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    queryset = DeliveryOrders.objects.filter( id_order = pk, order_status='в работе')
+    queryset = DeliveryOrders.objects.filter(id_order=pk, order_status='в работе')
     print(queryset)
     if queryset.exists():
-        queryset.update(id_moderator = id_user , date_finish=datetime.now(), order_status=new_status)
+        queryset.update(id_moderator=id_user, date_finish=datetime.now(), order_status=new_status)
+
+        
         return Response(status=status.HTTP_204_NO_CONTENT)
+        
     else:
         return Response({"Ошибка": "Заказ с указанным статусом не найден"}, status=status.HTTP_400_BAD_REQUEST)
+    
+
 
 
 
@@ -991,9 +1012,9 @@ def update_cargo_order_amount(request, pk, format=None):
 )
 @api_view(['PUT'])
 def async_task(request, format=None):
-    user = check_authorize(request)
-    if not user:
-        return Response(status=status.HTTP_403_FORBIDDEN)
+    # user = check_authorize(request)
+    # if not user:
+    #     return Response(status=status.HTTP_403_FORBIDDEN)
     
     idOrder = request.data.get("id_order")
     if idOrder is None:
@@ -1002,7 +1023,7 @@ def async_task(request, format=None):
 
     order = get_object_or_404(DeliveryOrders, pk=idOrder)
     data = {"order_status" : 'завершён',
-            "id_moderator" : user.id_user }
+            "id_moderator" : request.data.get('id_moderator') }
     serializer = OrdersSerializer(order, data=data, partial=True)
     if serializer.is_valid():
         serializer.save()
@@ -1010,7 +1031,7 @@ def async_task(request, format=None):
     
     
 
-    session_key = request.headers.get('Cookie')[12:]
+    session_key = request.headers.get('Cookie')[11:]
     print(session_key)
     # Make a request to localhost:8080
     url = "http://localhost:8080/deliver/"

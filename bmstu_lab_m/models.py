@@ -116,6 +116,7 @@ class DeliveryOrders(models.Model):
     date_create = models.DateField(blank=True, null=True)
     date_accept = models.DateField(blank=True, null=True)
     date_finish = models.DateField(blank=True, null=True)
+    is_delivered = models.BooleanField(null=True)
 
     class Meta:
         managed = False
