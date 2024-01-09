@@ -1021,13 +1021,13 @@ def async_task(request, format=None):
         return Response({"error": "id_order not provided"}, status=status.HTTP_400_BAD_REQUEST)
     
 
-    order = get_object_or_404(DeliveryOrders, pk=idOrder)
-    data = {"order_status" : 'завершён',
-            "id_moderator" : request.data.get('id_moderator') }
-    serializer = OrdersSerializer(order, data=data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
-        print('is_valid')
+    # order = get_object_or_404(DeliveryOrders, pk=idOrder)
+    # data = {"order_status" : 'завершён',
+    #         "id_moderator" : request.data.get('id_moderator') }
+    # serializer = OrdersSerializer(order, data=data, partial=True)
+    # if serializer.is_valid():
+    #     serializer.save()
+    #     print('is_valid')
     
     
 
