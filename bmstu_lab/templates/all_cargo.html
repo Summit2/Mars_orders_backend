@@ -45,13 +45,12 @@
   {% load static %}
   <li class = "card">
     
-  <!-- удаление элемента -->
+    
     <div class="delete-button">
+     
       <form method="post" action="deleteCargo/">
         {% csrf_token %}
-        
-        <input type="hidden" name="id_del" value="{{ item.id }}">
-        <button type="submit" name="del_btn"> &#10060; </button >
+        <input type="button" name="del_btn" value ="&#10060;">
     </form>
   </div>
   <br>
@@ -61,7 +60,11 @@
       <img src="{% static item.image_name %}" class ="images"> 
       
     </div>
-  
+   
+    
+    
+   
+
     <br>
     
           <div 

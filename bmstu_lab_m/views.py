@@ -338,7 +338,16 @@ data = {'data' : # в data вложены items имеет смысл испра
 
 def GetAllCargo(request):
     
+#     conn = psycopg2.connect(dbname="postgres", host="192.168.0.189", user="student", password="root", port="5432")
 
+# cursor = conn.cursor()
+ 
+# cursor.execute("INSERT INTO public.books (id, name, description) VALUES(1, 'Мастер и Маргарита', 'Крутая книга')")
+ 
+# conn.commit()   # реальное выполнение команд sql1
+ 
+# cursor.close()
+# conn.close()
 
     res=[]
     input_text = request.GET.get("good_item")
@@ -376,22 +385,9 @@ def GetCurrentCargo(request, id):
 
 
 from django.urls import reverse
-
 @csrf_exempt
 def DeleteCurrentCargo(request):
-        if request.method == 'POST':
-            
-            id_del = request.POST.get('id_del')
-
-
-            conn = psycopg2.connect(dbname="starship_delivery", host="127.0.0.1", user="postgres", password="1111", port="5432")
-            cursor = conn.cursor()
-            cursor.execute(f"update cargo set is_deleted = true where id_cargo = {id_del}")
-            conn.commit()   # реальное выполнение команд sql1
-            cursor.close()
-            conn.close()
-
-        redirect_url = reverse('all_cargo') 
-        return HttpResponseRedirect(redirect_url)
+    redirect_url = reverse('all_cargo')
+    return HttpResponseRedirect(redirect_url)
     
 
