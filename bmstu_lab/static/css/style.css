@@ -54,14 +54,6 @@
     font-size: 1rem;
     margin: 0;
 }
-
-
-.card .delete_button {
-    position: absolute;
-    top: 10px; /* Расстояние сверху */
-    right: 10px; /* Расстояние справа */
-  }
-
 /*размер шрифта*/
 .font b{
  font-size: 50px;

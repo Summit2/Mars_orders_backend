@@ -41,26 +41,18 @@
   
     {% for item in data.items %}
   
-  
+    <!-- {% include 'cargo_item.html' with element=item %} -->
+    <!-- {{ element.title }} -->
   {% load static %}
   <li class = "card">
     
     
-    <div class="buttons">
-      <input type="button" class="delete-button">
-  </div>
-  <br>
   
     
     <div class = images>
       <img src="{% static item.image_name %}" class ="images"> 
-      
     </div>
-   
     
-    
-   
-
     <br>
     
           <div 
