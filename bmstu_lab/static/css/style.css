@@ -56,7 +56,11 @@
 }
 
 
-
+.card .delete_button {
+    position: absolute;
+    top: 10px; /* Расстояние сверху */
+    right: 10px; /* Расстояние справа */
+  }
 
 /*размер шрифта*/
 .font b{
@@ -90,4 +94,3 @@
 
     background-color: #0026fd; /* Новый цвет фона при наведении */
 }
-

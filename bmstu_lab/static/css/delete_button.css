@@ -1,13 +1,25 @@
-
-/* Стилизация контейнера для кнопки */
+/* Стилизация кнопки удаления */
 .delete-button {
-    display: flex;
-    justify-content: flex-end; /* Разместить кнопку в правом верхнем углу карточки */
+    background-color: #a78c8c; /* Цвет фона кнопки */
+    color: #fff; /* Цвет текста кнопки */
+    border: none; /* Уберите границу кнопки */
+    padding: 5px 10px; /* Отступы вокруг текста кнопки */
+    border-radius: 5px; /* Закругленные углы */
+    
+    font-weight: bold; /* Жирный текст */
+    margin-top: 5px; /* Отступ сверху */
+
+    width: 50px; /* Ширина кнопки */
+    height: 50px; /* Высота кнопки */
+    background-image: url('trash.png'); /* Путь к изображению */
+    background-size: cover; /* Растягивать изображение, чтобы оно заполнило кнопку полностью */
+    background-repeat: no-repeat; /* Запретить повторение изображения */
     border: none; /* Убрать границу кнопки */
     cursor: pointer; /* Курсор при наведении на кнопку */
-    opacity: 0; 
 }
 
-.delete-button:hover {
-    opacity: 1; 
+/* Стилизация контейнера для кнопки */
+.buttons {
+    display: flex;
+    justify-content: flex-end; /* Разместить кнопку в правом верхнем углу карточки */
 }
