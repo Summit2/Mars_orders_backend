@@ -113,9 +113,9 @@ class DeliveryOrders(models.Model):
     id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='id_user', blank=True, null=True)
     id_moderator = models.ForeignKey('Users', models.DO_NOTHING, db_column='id_moderator', related_name='deliveryorders_id_moderator_set', blank=True, null=True)
     order_status = models.CharField(max_length=200, blank=True, null=True) #order_status::text ~~ 'введён'::text OR order_status::text ~~ 'в работе'::text OR order_status::text ~~ 'завершён'::text OR order_status::text ~~ 'отменён'::text OR order_status::text ~~ 'удалён'::text
-    date_create = models.DateField(blank=True, null=True)
-    date_accept = models.DateField(blank=True, null=True)
-    date_finish = models.DateField(blank=True, null=True)
+    date_create = models.DateTimeField(auto_now_add=True)
+    date_accept = models.DateTimeField(null=True, blank=True)
+    date_finish = models.DateTimeField(null=True, blank=True)
     is_delivered = models.BooleanField(null=True)
 
     class Meta:

@@ -4,7 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.urls import reverse
-
+from datetime import datetime
+from django.utils.dateparse import parse_datetime  #
 # PostgreSQL
 import psycopg2
 
@@ -565,9 +566,10 @@ def get_orders(request, format=None):
     orderStatus = request.GET.get('order_status', None)
 
     if date_create:
-        date_create = datetime.strptime(date_create, '%d.%m.%Y').date()
+        date_create = parse_datetime(date_create)  # Parse date and time
     if date_finish:
-        date_finish = datetime.strptime(date_finish, '%d.%m.%Y').date()
+        date_finish = parse_datetime(date_finish)  # Parse date and time
+
   
 
     possible_statuses = ['в работе', 'завершён', 'отменён']
@@ -581,17 +583,16 @@ def get_orders(request, format=None):
             if date_finish is not None:
                 all_orders = all_orders.filter(id_user=id_user, date_create__gte=date_create, date_finish__lte=date_finish)
             else:
-                all_orders = all_orders.filter(id_user=id_user, date_create__gte='1980-01-01')
+                all_orders = all_orders.filter(id_user=id_user, date_create__gte=datetime(1980, 1, 1))
 
         data = []
-        
+
         for order in all_orders:
             user_instance = Users.objects.get(id_user=order.id_user.id_user)
-            
+
             moderator_instance = None
             if order.id_moderator is not None:
                 moderator_instance = Users.objects.get(id_user=order.id_moderator.id_user)
-                
 
             data.append({
                 "pk": order.pk,
@@ -599,7 +600,7 @@ def get_orders(request, format=None):
                 "user_email": user_instance.email,
                 "moderator_email": moderator_instance.email if moderator_instance is not None else None,
                 "order_status": order.order_status,
-                "is_delivered" : order.is_delivered,
+                "is_delivered": order.is_delivered,
                 "date_create": order.date_create,
                 "date_accept": order.date_accept,
                 "date_finish": order.date_finish
@@ -723,6 +724,7 @@ def put_order_detail(request, pk, format=None):
       return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 @api_view(['DELETE'])
 @swagger_auto_schema(
     responses={
@@ -738,7 +740,7 @@ def delete_order_detail(request, pk, format=None):
     Удалить конкретный заказ
     """
     user = check_authorize(request)
-    if not user: # or user.is_moderator:
+    if not user:  # or user.is_moderator:
         print(f'DELETE order/id for {user} failed')
         return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -754,7 +756,6 @@ def delete_order_detail(request, pk, format=None):
     order.save()
 
     return Response(status=status.HTTP_200_OK)
-
 
 
 
@@ -779,6 +780,7 @@ def delete_order_detail(request, pk, format=None):
     },
     operation_description='Update user status',
 )
+
 @api_view(['PUT'])
 def set_user_status(request, pk, format=None):
     """
@@ -787,7 +789,7 @@ def set_user_status(request, pk, format=None):
     введён -> в работе
     """
     user = check_authorize(request)
-    if not user:# or user.is_moderator:
+    if not user:  # or user.is_moderator:
         print(f'set_user_status if failed for {user}')
         return Response(status=status.HTTP_403_FORBIDDEN)
 
@@ -802,32 +804,32 @@ def set_user_status(request, pk, format=None):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     queryset = DeliveryOrders.objects.filter(id_user=id_user, order_status='введён' if new_status == 'в работе' else 'в работе')
+
     if new_status == "в работе":
         queryset = DeliveryOrders.objects.filter(id_user=id_user, order_status='введён')
         if queryset.exists():
-            queryset.update( order_status=new_status ,date_accept =datetime.now())
+            queryset.update(order_status=new_status, date_accept=datetime.now())
             # Extract session_id from the request headers
-        print(request.COOKIES.get('session_key'))
-        session_id = request.COOKIES.get('session_key') #request.headers.get('Cookie', '').split('=')[2]
-        print(session_id )
-        # print(request.headers.get('Cookie', '').split('session_key=')[0].split(';')[0] )
-        # Make a request to the /async_task endpoint
-        async_task_url = "http://localhost:8000/api/async_task/"
-        async_task_headers = {'Content-Type': 'application/json', 'Cookie': f'session_id={session_id}'}
-        async_task_data = {"id_order": pk, "id_moderator" : user.id_user}
-        async_task_response = requests.put(async_task_url, headers=async_task_headers, json=async_task_data)
+            print(request.COOKIES.get('session_key'))
+            session_id = request.COOKIES.get('session_key')  # request.headers.get('Cookie', '').split('=')[2]
+            print(session_id)
+            # print(request.headers.get('Cookie', '').split('session_key=')[0].split(';')[0] )
+            # Make a request to the /async_task endpoint
+            async_task_url = "http://localhost:8000/api/async_task/"
+            async_task_headers = {'Content-Type': 'application/json', 'Cookie': f'session_id={session_id}'}
+            async_task_data = {"id_order": pk, "id_moderator": user.id_user}
+            async_task_response = requests.put(async_task_url, headers=async_task_headers, json=async_task_data)
 
-        if async_task_response.status_code == 200:
-            print(async_task_response)
-            return Response(status=status.HTTP_204_NO_CONTENT)
-    elif new_status == 'отменён': 
+            if async_task_response.status_code == 200:
+                print(async_task_response)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+    elif new_status == 'отменён':
         queryset = DeliveryOrders.objects.filter(id_user=id_user, order_status='введён')
         if queryset.exists():
-            queryset.update( date_finish=datetime.now(), order_status=new_status)
+            queryset.update(date_finish=datetime.now(), order_status=new_status)
             return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         return Response({"Ошибка": "Заказ с указанным статусом не найден"}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
         
@@ -857,7 +859,7 @@ def set_user_status(request, pk, format=None):
 def update_moderator_status(request, pk, format=None):
     """
     Возможные статусы:
-
+    
     в работе -> завершён
     в работе -> отменён
     """
@@ -878,15 +880,13 @@ def update_moderator_status(request, pk, format=None):
     queryset = DeliveryOrders.objects.filter(id_order=pk, order_status='в работе')
     print(queryset)
     if queryset.exists():
+        # Update the 'date_finish' field to store both date and time
         queryset.update(id_moderator=id_user, date_finish=datetime.now(), order_status=new_status)
 
-        
         return Response(status=status.HTTP_204_NO_CONTENT)
         
     else:
         return Response({"Ошибка": "Заказ с указанным статусом не найден"}, status=status.HTTP_400_BAD_REQUEST)
-    
-
 
 
 
@@ -900,6 +900,7 @@ def update_moderator_status(request, pk, format=None):
     operation_description='Удалить услугу из заявки для пользователя'
 )
 @api_view(['DELETE'])
+
 def delete_cargo_order(request, pk, format=None):
     """
     pk - номер груза (cargo), который мы хотим удалить из заказа 
@@ -909,42 +910,40 @@ def delete_cargo_order(request, pk, format=None):
     user = check_authorize(request)
     if not user:
         return Response(status=status.HTTP_403_FORBIDDEN)
+
     id_user = user.id_user
-
     active_order = DeliveryOrders.objects.filter(order_status='введён', id_user=id_user).first()
+
     if active_order is not None:
-        del_result = CargoOrder.objects.filter(
-            id_order=active_order.id_order, id_cargo=pk
-        ).delete()
+        # Delete the cargo from the active order
+        del_result = CargoOrder.objects.filter(id_order=active_order.id_order, id_cargo=pk).delete()
 
+        # Check if there are any cargos left in the active order
+        cargo_in_order_ids = CargoOrder.objects.filter(id_order=active_order.id_order)
+        list_of_cargo_ids = [i.id_cargo.id_cargo for i in cargo_in_order_ids]
+        cargo_in_order = Cargo.objects.filter(id_cargo__in=list_of_cargo_ids)
 
-    # Now check if there are any cargos left in the active order
-    cargo_in_order_ids = CargoOrder.objects.filter(id_order=active_order.id_order)
-    list_of_cargo_ids = [i.id_cargo.id_cargo for i in cargo_in_order_ids]
-    cargo_in_order = Cargo.objects.filter(id_cargo__in=list_of_cargo_ids)
+        cargo_serializer = CargoSerializer(cargo_in_order, many=True)
 
-    cargo_serializer = CargoSerializer(cargo_in_order, many=True)
-    
-    try:
-        cargo_in_active_order = cargo_serializer.data
-    except ValueError:
-        cargo_in_active_order = []
+        try:
+            cargo_in_active_order = cargo_serializer.data
+        except ValueError:
+            cargo_in_active_order = []
 
-    
+        if len(cargo_in_active_order) == 0:
+            order = active_order
+            curr_status = order.order_status
+            if curr_status != 'введён':
+                return Response(
+                    {"error": "удалить можно только черновую заявку"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Update the 'date_finish' field to store both date and time
+            order.order_status = 'удалён'
+            order.date_finish = datetime.now()
+            order.save()
 
-    if len(cargo_in_active_order) == 0:
-        
-        order = active_order
-        curr_status = order.order_status
-        if curr_status != 'введён':
-            return Response(
-                {"error": "удалить можно только черновую заявку"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        order.order_status = 'удалён'
-        order.date_finish = datetime.now()
-        order.save()
-        
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
