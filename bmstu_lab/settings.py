@@ -38,15 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bmstu_lab_m',
-    # 'starship_delivery'
-    
-    # 'auth_group',
-    # 'auth_group_permissions',
-    # 'auth_permission',
-    # 'auth_user',
-    # 'auth_user_groups',
-    # 'auth_user_user_permissions',
     # 'bmstu_lab_m.models.Cargo' ,
     # 'bmstu_lab_m.models.CargoOrder',
     # 'bmstu_lab_m.models.DeliveryOrders',

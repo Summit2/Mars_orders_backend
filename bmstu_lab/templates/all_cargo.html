@@ -50,7 +50,7 @@
       <form method="post" action="deleteCargo/">
         {% csrf_token %}
         
-        <input type="hidden" name="id_del" value="{{ item.id_cargo }}">
+        <input type="hidden" name="id_del" value="{{ item.id }}">
         <button type="submit" name="del_btn"> &#10060; </button >
     </form>
   </div>
@@ -58,7 +58,7 @@
   
     
     <div class = images>
-      <img src="{% static item.image_url %}" class ="images"> 
+      <img src="{% static item.image_name %}" class ="images"> 
       
     </div>
   
@@ -69,7 +69,7 @@
           </div>
 
           
-    <a href="{% url 'item_url' item.id_cargo %}" class = "beautiful-link"> 
+    <a href="{% url 'item_url' item.id %}" class = "beautiful-link"> 
       
      <h2>Подробнее...</h2>
     </a>
