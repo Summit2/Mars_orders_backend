@@ -4,11 +4,6 @@ from django.shortcuts import render
 
 from datetime import date 
 
-import psycopg2
-
-from bmstu_lab_m.models import Book
-
-
 '''Заявки на доставку грузов на Марс на Starship. 
 Услуги - товары, доставляемыe на Марс на Starship, 
    заявки - заявки на конкретный объем товаров
@@ -87,9 +82,6 @@ data = {'data' : # в data вложены items имеет смысл испра
     }}
 
 def GetAllCargo(request):
-    
-    
-
     res=[]
     input_text = request.GET.get("good_item")
     # print(input_text)
@@ -125,6 +117,6 @@ def GetCurrentCargo(request, id):
     )
 
 
-# def sendText(request):
-#     input_text = request.POST['text']
+def sendText(request):
+    input_text = request.POST['text']
     

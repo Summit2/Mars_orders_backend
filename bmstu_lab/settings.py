@@ -76,14 +76,8 @@ WSGI_APPLICATION = 'bmstu_lab.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'starship_delivery',
-        'USER': 'postgres',
-        'PASSWORD': '1111',
-        'HOST': 'localhost',
-        'PORT': 5432, # Стандартный порт PostgreSQL
-        # 'OPTIONS': {'charset': 'utf8'},
-        'TEST_CHARSET': 'utf8',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
