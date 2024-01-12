@@ -24,10 +24,10 @@ from bmstu_lab_m import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('', views.GetAllCargo, name="all_cargo"),
+    path('', views.GetAllCargo),
     path('item/<int:id>/', views.GetCurrentCargo, name='item_url'), # конкретный груз и его описание
 
-    path('deleteCargo/', views.DeleteCurrentCargo, name = 'del_cur_cargo')
+    # path('sendText', views.sendText, name='sendText')
 ]
 
 from django.conf import settings
