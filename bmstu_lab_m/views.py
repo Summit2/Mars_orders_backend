@@ -21,6 +21,8 @@ from bmstu_lab_m.models import Cargo
 
 def GetAllCargo(request):
     
+
+
     res=[]
     input_text = request.GET.get("good_item")
     data = Cargo.objects.filter(is_deleted=False)
@@ -37,9 +39,9 @@ def GetAllCargo(request):
             'input' : input_text
         } }
                      )
+    else:
     
-    
-    return render(
+        return render(
             request,'all_cargo.html', {
                 'data' :
                 {
