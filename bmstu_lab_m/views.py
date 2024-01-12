@@ -6,17 +6,23 @@ from datetime import date
 
 import psycopg2
 
-#from bmstu_lab_m.models import Cargo
-#from bmstu_lab_m.models import CargoOrder
-#from bmstu_lab_m.models import DeliveryOrders
-#from bmstu_lab_m.models import Users
-
+from bmstu_lab_m.models import Book
 
 
 '''Заявки на доставку грузов на Марс на Starship. 
 Услуги - товары, доставляемыe на Марс на Starship, 
    заявки - заявки на конкретный объем товаров
 '''
+# def hello(request):
+#     
+#     return render(request, 'index.html', {
+#         'data' :    {'current_date': date.today(),
+#                      'list' : [1,2,3]
+#                      }
+
+        
+#     })
+
 
     # кроме html видимо можно передавать еще и типа json (или словарей)
 
@@ -82,16 +88,7 @@ data = {'data' : # в data вложены items имеет смысл испра
 
 def GetAllCargo(request):
     
-#     conn = psycopg2.connect(dbname="postgres", host="192.168.0.189", user="student", password="root", port="5432")
-
-# cursor = conn.cursor()
- 
-# cursor.execute("INSERT INTO public.books (id, name, description) VALUES(1, 'Мастер и Маргарита', 'Крутая книга')")
- 
-# conn.commit()   # реальное выполнение команд sql1
- 
-# cursor.close()
-# conn.close()
+    
 
     res=[]
     input_text = request.GET.get("good_item")

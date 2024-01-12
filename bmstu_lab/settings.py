@@ -38,10 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'bmstu_lab_m.models.Cargo' ,
-    # 'bmstu_lab_m.models.CargoOrder',
-    # 'bmstu_lab_m.models.DeliveryOrders',
-    #  'bmstu_lab_m.models.Users'
 ]
 
 MIDDLEWARE = [
