@@ -1,4 +1,5 @@
-Ссылки на другие части проекта:
+**Ссылки на другие части проекта:**
+
 Фронт: https://github.com/Summit2/Mars_orders_frontend
 
 Асинхронный сервис: https://github.com/Summit2/Mars_orders_asynco
